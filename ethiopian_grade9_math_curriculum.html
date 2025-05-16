@@ -1,0 +1,863 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Ethiopian Grade 9 Mathematics Learning Hub with Mark List</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap');
+    body {
+      font-family: 'Roboto', sans-serif;
+      background: #f4f7f9;
+      margin: 0; padding: 0;
+      color: #333;
+      line-height: 1.6;
+    }
+    header {
+      background: #004d99;
+      color: white;
+      padding: 1.5rem 1rem;
+      text-align: center;
+    }
+    header h1 {
+      margin: 0;
+      font-weight: 700;
+      font-size: 2rem;
+      letter-spacing: 1px;
+    }
+    nav {
+      background: #0073e6;
+      display: flex;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+    nav button {
+      background: transparent;
+      border: none;
+      color: white;
+      padding: 1rem 1.5rem;
+      cursor: pointer;
+      font-size: 1rem;
+      transition: background 0.3s ease;
+    }
+    nav button:hover, nav button.active {
+      background: #0059b3;
+    }
+    main {
+      max-width: 900px;
+      margin: 2rem auto 6rem auto;
+      padding: 0 1rem;
+    }
+    section {
+      background: white;
+      margin-bottom: 2rem;
+      padding: 1.5rem 2rem;
+      border-radius: 8px;
+      box-shadow: 0 4px 8px rgb(0 0 0 / 0.1);
+      display: none;
+    }
+    section.active {
+      display: block;
+    }
+    section h2 {
+      margin-top: 0;
+      color: #004d99;
+    }
+    ul {
+      margin-left: 1.25rem;
+    }
+    .quiz {
+      margin-top: 1rem;
+      padding: 1rem;
+      border: 2px solid #e0e0e0;
+      border-radius: 6px;
+      background: #f9fafb;
+    }
+    .quiz h3 {
+      margin-top: 0;
+      color: #004d99;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .options {
+      list-style: none;
+      padding: 0;
+      margin: 0.5rem 0 1rem 0;
+    }
+    .options li {
+      margin-bottom: 0.5rem;
+      user-select: none;
+    }
+    label {
+      cursor: pointer;
+    }
+    button.btn-check, button.btn-edit, button.btn-save, button.btn-cancel {
+      background: #0073e6;
+      color: white;
+      border: none;
+      padding: 0.4rem 1rem;
+      font-size: 1rem;
+      border-radius: 4px;
+      cursor: pointer;
+      transition: background 0.3s ease;
+      margin-left: 0.5rem;
+    }
+    button.btn-check:hover, button.btn-edit:hover, button.btn-save:hover, button.btn-cancel:hover {
+      background: #0059b3;
+    }
+    button.btn-cancel {
+      background: #cc3b3b;
+      margin-left: 0.5rem;
+    }
+    .feedback {
+      font-weight: 700;
+      margin-top: 0.5rem;
+    }
+    .correct {
+      color: green;
+    }
+    .incorrect {
+      color: red;
+    }
+    .edit-mode {
+      border: 2px dashed #0073e6;
+      padding: 0.5rem;
+      background: #e5f3ff;
+      margin-bottom: 1rem;
+      border-radius: 6px;
+    }
+    .edit-mode label {
+      font-weight: 700;
+      display: block;
+      margin-bottom: 0.3rem;
+    }
+    input[type=text], textarea {
+      width: 100%;
+      padding: 0.3rem 0.5rem;
+      margin-bottom: 0.7rem;
+      border-radius: 4px;
+      border: 1px solid #ccc;
+      font-size: 1rem;
+      font-family: inherit;
+    }
+    textarea {
+      resize: vertical;
+    }
+    #edit-toggle {
+      position: fixed;
+      right: 1rem;
+      bottom: 10rem;
+      padding: 0.5rem 1rem;
+      background: #004d99;
+      color: white;
+      border: none;
+      cursor: pointer;
+      border-radius: 6px;
+      font-weight: 700;
+      transition: background 0.3s ease;
+      z-index: 1001;
+    }
+    #edit-toggle:hover {
+      background: #003366;
+    }
+    #marks-toggle {
+      position: fixed;
+      right: 1rem;
+      bottom: 4rem;
+      padding: 0.5rem 1rem;
+      background: #2a9d8f;
+      color: white;
+      border: none;
+      cursor: pointer;
+      border-radius: 6px;
+      font-weight: 700;
+      transition: background 0.3s ease;
+      z-index: 1001;
+    }
+    #marks-toggle:hover {
+      background: #1f786b;
+    }
+    #marks-panel {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      width: 100%;
+      max-height: 300px;
+      background: white;
+      border-top: 3px solid #004d99;
+      box-shadow: 0 -4px 8px rgba(0,0,0,0.1);
+      overflow-y: auto;
+      padding: 1rem;
+      display: none;
+      z-index: 1000;
+      font-size: 0.9rem;
+    }
+    #marks-panel h3 {
+      margin: 0 0 0.5rem 0;
+      color: #004d99;
+    }
+    #marks-panel table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+    #marks-panel th, #marks-panel td {
+      padding: 0.5rem;
+      border: 1px solid #ddd;
+      text-align: left;
+    }
+    #marks-panel th {
+      background: #f0f8ff;
+      font-weight: 700;
+    }
+    .close-marks {
+      float: right;
+      background: #cc3b3b;
+      border: none;
+      color: white;
+      padding: 0.25rem 0.5rem;
+      cursor: pointer;
+      border-radius: 4px;
+      font-weight: 700;
+    }
+    .close-marks:hover {
+      background: #a32c2c;
+    }
+    @media (max-width: 600px) {
+      nav button {
+        flex: 1 1 100%;
+        margin: 2px 0;
+      }
+      #marks-panel {
+        font-size: 0.8rem;
+      }
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <h1>Ethiopian Grade 9 Mathematics Learning Hub</h1>
+  <p>Learn with interactive lessons, many practice questions, dynamic graphs, and track your marks.</p>
+</header>
+
+<nav aria-label="Topics Navigation">
+  <button class="active" data-target="numbers">Numbers and Operations</button>
+  <button data-target="algebra">Algebraic Expressions</button>
+  <button data-target="equations">Linear Equations & Inequalities</button>
+  <button data-target="geometry">Geometry Basics</button>
+  <button data-target="statistics">Statistics and Probability</button>
+</nav>
+
+<main>
+  <!-- Sections will be dynamically generated -->
+</main>
+
+<button id="edit-toggle" aria-pressed="false" aria-label="Toggle edit mode" title="Toggle Edit Mode">Enter Edit Mode</button>
+<button id="marks-toggle" aria-pressed="false" aria-label="Toggle marks panel" title="View Your Marks">View Marks</button>
+
+<section id="marks-panel" aria-live="polite" aria-label="Marks Panel">
+  <button class="close-marks" aria-label="Close marks panel">&times;</button>
+  <h3>Your Quiz Marks Summary</h3>
+  <div id="marks-content">Loading...</div>
+</section>
+
+<footer>
+  &copy; 2024 Ethiopian Grade 9 Mathematics | Editable Quiz with Mark Tracker
+</footer>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+  // Curriculum topics with multiple quizzes and optional graphs
+  const topics = {
+    numbers: {
+      title: "Numbers and Operations",
+      content: "Understanding numbers, integer operations, fractions, decimals, and powers.",
+      quiz: [
+        {
+          question: "What is the result of (-3) × 4?",
+          options: ["-12", "12", "-7", "7"],
+          correct: 0
+        },
+        {
+          question: "Simplify: 2/3 + 4/9",
+          options: ["2/12", "10/9", "6/9", "8/9"],
+          correct: 1
+        },
+        {
+          question: "What is 5 squared?",
+          options: ["10", "25", "15", "20"],
+          correct: 1
+        }
+      ]
+    },
+    algebra: {
+      title: "Algebraic Expressions",
+      content: "Simplifying, expanding, factoring algebraic expressions.",
+      quiz: [
+        {
+          question: "Simplify: 3x + 5x",
+          options: ["8x", "15x", "2x", "8"],
+          correct: 0
+        },
+        {
+          question: "Factorize: x^2 - 9",
+          options: ["(x - 3)(x + 3)", "x(x - 9)", "(x - 9)(x + 9)", "x^2 + 9"],
+          correct: 0
+        },
+        {
+          question: "Expand: (x + 3)(x - 2)",
+          options: ["x² + x - 6", "x² - x + 6", "x² + 5x - 6", "x² - 5x - 6"],
+          correct: 2
+        }
+      ],
+      graphs: [
+        {
+          title: "Graph of y = 2x + 1",
+          data: {
+            labels: [-3, -2, -1, 0, 1, 2, 3],
+            datasets: [{
+              label: "y = 2x + 1",
+              data: [-5, -3, -1, 1, 3, 5, 7],
+              borderColor: 'rgb(54, 162, 235)',
+              fill: false,
+              tension: 0.1,
+              pointRadius: 5
+            }]
+          },
+          options: {
+            scales: {
+              x: {title: {display: true, text: 'x'}},
+              y: {title: {display: true, text: 'y'}}
+            }
+          }
+        }
+      ]
+    },
+    equations: {
+      title: "Linear Equations & Inequalities",
+      content: "Solving linear equations and inequalities and understanding solution sets.",
+      quiz: [
+        {
+          question: "Solve for x: 2x + 3 = 11",
+          options: ["x = 4", "x = 7", "x = 8", "x = 3"],
+          correct: 0
+        },
+        {
+          question: "Which is a solution to inequality x - 5 > 2?",
+          options: ["x = 4", "x = 7", "x = 1", "x = 3"],
+          correct: 1
+        },
+        {
+          question: "If 3x = 12, what is x?",
+          options: ["4", "6", "3", "9"],
+          correct: 0
+        }
+      ],
+      graphs: [
+        {
+          title: "Graph of y = -x + 4",
+          data: {
+            labels: [-3, -2, -1, 0, 1, 2, 3],
+            datasets: [{
+              label: "y = -x + 4",
+              data: [7, 6, 5, 4, 3, 2, 1],
+              borderColor: 'rgb(255, 99, 132)',
+              fill: false,
+              tension: 0.1,
+              pointRadius: 5
+            }]
+          },
+          options: {
+            scales: {
+              x: {title: {display: true, text: 'x'}},
+              y: {title: {display: true, text: 'y'}}
+            }
+          }
+        }
+      ]
+    },
+    geometry: {
+      title: "Geometry Basics",
+      content: "Points, lines, angles, triangles, and properties and theorems.",
+      quiz: [
+        {
+          question: "What is the sum of the interior angles of a triangle?",
+          options: ["90°", "180°", "360°", "270°"],
+          correct: 1
+        },
+        {
+          question: "What type of triangle has all sides equal?",
+          options: ["Isosceles", "Equilateral", "Scalene", "Right-angle"],
+          correct: 1
+        },
+        {
+          question: "What is the measure of a right angle?",
+          options: ["45°", "90°", "180°", "30°"],
+          correct: 1
+        }
+      ]
+    },
+    statistics: {
+      title: "Statistics and Probability",
+      content: "Collecting, organizing, interpreting data, and basics of probability.",
+      quiz: [
+        {
+          question: "What is the probability of getting a head in a fair coin toss?",
+          options: ["0.5", "1", "0", "2"],
+          correct: 0
+        },
+        {
+          question: "What is the mean of 2, 3, 5, 7, 8?",
+          options: ["5", "10", "3", "4"],
+          correct: 0
+        },
+        {
+          question: "If a die is rolled, what is the probability of getting 6?",
+          options: ["1/6", "1/2", "1/3", "1/4"],
+          correct: 0
+        }
+      ],
+      graphs: [
+        {
+          title: "Sample Bar Graph",
+          data: {
+            labels: ["A", "B", "C", "D", "E"],
+            datasets: [{
+              label: "Number of Students",
+              data: [12, 19, 7, 15, 9],
+              backgroundColor: [
+                '#4dc9f6',
+                '#f67019',
+                '#f53794',
+                '#537bc4',
+                '#acc236'
+              ]
+            }]
+          },
+          options: {
+            scales: {
+              y: {beginAtZero:true, title:{ display:true, text: 'Students'}},
+              x: {title: {display:true, text: 'Category'}}
+            }
+          }
+        }
+      ]
+    }
+  };
+
+  let editMode = false;
+  let chartInstances = {};
+  let marks = {};  // marks structure: marks[topic][questionIndex] = true/false
+
+  const navButtons = document.querySelectorAll('nav button');
+  const main = document.querySelector('main');
+  const editToggleBtn = document.getElementById('edit-toggle');
+  const marksToggleBtn = document.getElementById('marks-toggle');
+  const marksPanel = document.getElementById('marks-panel');
+  const marksContent = document.getElementById('marks-content');
+  const marksCloseBtn = marksPanel.querySelector('.close-marks');
+
+  // Accessibility - focus management
+  function focusFirstInput(section) {
+    const input = section.querySelector('input, textarea, button');
+    if (input) input.focus();
+  }
+
+  function saveQuizzesToStorage() {
+    localStorage.setItem('ethiopianMathQuizzes', JSON.stringify(topics));
+  }
+
+  function loadQuizzesFromStorage() {
+    const saved = localStorage.getItem('ethiopianMathQuizzes');
+    if (saved) {
+      try {
+        const parsed = JSON.parse(saved);
+        for (let key in parsed) {
+          if (topics[key]) {
+            topics[key] = parsed[key];
+          }
+        }
+      } catch(e) {
+        console.error("Failed to load quizzes from localStorage", e);
+      }
+    }
+  }
+  function saveMarksToStorage() {
+    localStorage.setItem('ethiopianMathMarks', JSON.stringify(marks));
+  }
+  function loadMarksFromStorage() {
+    const saved = localStorage.getItem('ethiopianMathMarks');
+    if (saved) {
+      try {
+        marks = JSON.parse(saved);
+      } catch(e) {
+        marks = {};
+        console.error("Failed to load marks from localStorage", e);
+      }
+    }
+  }
+  function destroyCharts() {
+    for (const key in chartInstances) {
+      if(chartInstances[key]) {
+        chartInstances[key].destroy();
+      }
+    }
+    chartInstances = {};
+  }
+
+  // Build section content dynamically
+  function buildSection(key, data) {
+    const section = document.createElement('section');
+    section.id = key;
+    section.setAttribute('tabindex', '0');
+    section.setAttribute('aria-labelledby', key + "-title");
+
+    const h2 = document.createElement('h2');
+    h2.id = key + "-title";
+    h2.textContent = data.title;
+    section.appendChild(h2);
+
+    const p = document.createElement('p');
+    p.textContent = data.content;
+    section.appendChild(p);
+
+    // Quiz container - support multiple questions
+    data.quiz.forEach((quizData, qIndex) => {
+      const quiz = document.createElement('div');
+      quiz.className = 'quiz';
+
+      const quizHeader = document.createElement('h3');
+      quizHeader.textContent = `Practice Question ${qIndex + 1}:`;
+      const editBtn = document.createElement('button');
+      editBtn.className = 'btn-edit';
+      editBtn.type = 'button';
+      editBtn.textContent = 'Edit';
+      editBtn.style.display = editMode ? 'inline-block' : 'none';
+      quizHeader.appendChild(editBtn);
+      quiz.appendChild(quizHeader);
+
+      // Question display or textarea
+      const questionDisplay = document.createElement('p');
+      questionDisplay.textContent = quizData.question;
+      questionDisplay.className = 'quiz-question-display';
+      quiz.appendChild(questionDisplay);
+
+      const questionEditArea = document.createElement('textarea');
+      questionEditArea.value = quizData.question;
+      questionEditArea.style.display = 'none';
+      questionEditArea.rows = 3;
+      quiz.appendChild(questionEditArea);
+
+      // Options list
+      const ul = document.createElement('ul');
+      ul.className = 'options';
+      quizData.options.forEach((opt, idx) => {
+        const li = document.createElement('li');
+
+        const label = document.createElement('label');
+        const radio = document.createElement('input');
+        radio.type = 'radio';
+        radio.name = `${key}-quiz-${qIndex}`;
+        radio.value = idx;
+        label.appendChild(radio);
+
+        const span = document.createElement('span');
+        span.textContent = opt;
+        label.appendChild(span);
+
+        li.appendChild(label);
+
+        // Editable option input
+        const optionEdit = document.createElement('input');
+        optionEdit.type = 'text';
+        optionEdit.value = opt;
+        optionEdit.style.display = 'none';
+        optionEdit.className = 'option-edit';
+        optionEdit.dataset.index = idx;
+        li.appendChild(optionEdit);
+
+        ul.appendChild(li);
+      });
+      quiz.appendChild(ul);
+
+      // Buttons for Save / Cancel when editing
+      const btnSave = document.createElement('button');
+      btnSave.className = 'btn-save';
+      btnSave.textContent = 'Save';
+      btnSave.style.display = 'none';
+      quiz.appendChild(btnSave);
+
+      const btnCancel = document.createElement('button');
+      btnCancel.className = 'btn-cancel';
+      btnCancel.textContent = 'Cancel';
+      btnCancel.style.display = 'none';
+      quiz.appendChild(btnCancel);
+
+      // Check answer button & feedback
+      const btnCheck = document.createElement('button');
+      btnCheck.className = 'btn-check';
+      btnCheck.textContent = 'Check Answer';
+      quiz.appendChild(btnCheck);
+
+      const feedbackDiv = document.createElement('div');
+      feedbackDiv.className = 'feedback';
+      feedbackDiv.setAttribute('aria-live', 'polite');
+      quiz.appendChild(feedbackDiv);
+
+      section.appendChild(quiz);
+
+      // Event listeners for buttons
+      editBtn.addEventListener('click', () => {
+        enterEditMode(section, data, qIndex, questionDisplay, questionEditArea, ul, editBtn, btnCheck, btnSave, btnCancel, feedbackDiv);
+      });
+
+      btnSave.addEventListener('click', () => {
+        saveEdit(section, key, qIndex, questionDisplay, questionEditArea, ul, editBtn, btnCheck, btnSave, btnCancel, feedbackDiv);
+      });
+
+      btnCancel.addEventListener('click', () => {
+        cancelEdit(section, questionDisplay, questionEditArea, ul, editBtn, btnCheck, btnSave, btnCancel, feedbackDiv, data, qIndex);
+      });
+
+      btnCheck.addEventListener('click', () => {
+        if(editMode) return;
+        checkAnswer(section, key, qIndex, ul, feedbackDiv, data);
+      });
+    });
+
+    // Graphs rendering if present
+    if(data.graphs && data.graphs.length > 0) {
+      data.graphs.forEach((graph, gIndex) => {
+        const graphTitle = document.createElement('h3');
+        graphTitle.textContent = graph.title;
+        section.appendChild(graphTitle);
+
+        const canvas = document.createElement('canvas');
+        const canvasId = `${key}-graph-${gIndex}`;
+        canvas.id = canvasId;
+        section.appendChild(canvas);
+
+        // Delay chart rendering until DOM appended
+        setTimeout(() => {
+          if(chartInstances[canvasId]) {
+            chartInstances[canvasId].destroy();
+          }
+          chartInstances[canvasId] = new Chart(document.getElementById(canvasId), {
+            type: graph.type || 'line',
+            data: graph.data,
+            options: graph.options || {}
+          });
+        }, 0);
+      });
+    }
+
+    return section;
+  }
+
+  function renderContent() {
+    main.innerHTML = '';
+    destroyCharts();
+    for (const [key, value] of Object.entries(topics)) {
+      const sec = buildSection(key, value);
+      main.appendChild(sec);
+    }
+    setActiveSection('numbers');
+  }
+
+  function setActiveSection(targetId) {
+    const sections = main.querySelectorAll('section');
+    sections.forEach(sec => {
+      if (sec.id === targetId) {
+        sec.classList.add('active');
+        sec.setAttribute('tabindex', '0');
+        sec.focus();
+      } else {
+        sec.classList.remove('active');
+        sec.setAttribute('tabindex', '-1');
+      }
+    });
+    navButtons.forEach(btn => {
+      if (btn.dataset.target === targetId) {
+        btn.classList.add('active');
+        btn.setAttribute('aria-current', 'page');
+      } else {
+        btn.classList.remove('active');
+        btn.removeAttribute('aria-current');
+      }
+    });
+  }
+  navButtons.forEach(button => {
+    button.addEventListener('click', () => {
+      setActiveSection(button.dataset.target);
+    });
+  });
+
+  // Edit mode toggle
+  editToggleBtn.addEventListener('click', () => {
+    editMode = !editMode;
+    editToggleBtn.textContent = editMode ? 'Exit Edit Mode' : 'Enter Edit Mode';
+    editToggleBtn.setAttribute('aria-pressed', editMode.toString());
+    renderContent();
+  });
+
+  // Marks panel toggle
+  marksToggleBtn.addEventListener('click', () => {
+    if(marksPanel.style.display === 'block') {
+      marksPanel.style.display = 'none';
+      marksToggleBtn.setAttribute('aria-pressed', 'false');
+    } else {
+      updateMarksPanel();
+      marksPanel.style.display = 'block';
+      marksToggleBtn.setAttribute('aria-pressed', 'true');
+    }
+  });
+  marksCloseBtn.addEventListener('click', () => {
+    marksPanel.style.display = 'none';
+    marksToggleBtn.setAttribute('aria-pressed', 'false');
+  });
+
+  function updateMarksPanel() {
+    // Build a summary table of marks
+    let html = '<table><thead><tr><th>Topic</th><th>Question</th><th>Your Answer</th><th>Correct Answer</th><th>Status</th></tr></thead><tbody>';
+    let totalQuestions = 0;
+    let correctCount = 0;
+    for(const topicKey in topics) {
+      const topic = topics[topicKey];
+      topic.quiz.forEach( (q, idx) => {
+        totalQuestions++;
+        const userAnswerIndex = (marks[topicKey] && typeof marks[topicKey][idx] !== 'undefined') ? marks[topicKey][idx].selected : null;
+        const userCorrect = (marks[topicKey] && typeof marks[topicKey][idx] !== 'undefined') ? marks[topicKey][idx].correct : false;
+        if(userCorrect) correctCount++;
+        const userAnswerText = (userAnswerIndex !== null) ? q.options[userAnswerIndex] : 'Not answered';
+        const correctAnswerText = q.options[q.correct];
+        const statusText = userCorrect ? '<span style="color:green;">Correct</span>' : (userAnswerIndex === null ? '<span style="color:gray;">Unanswered</span>' : '<span style="color:red;">Incorrect</span>');
+        html += `<tr>
+          <td>${topic.title}</td>
+          <td>${q.question}</td>
+          <td>${userAnswerText}</td>
+          <td>${correctAnswerText}</td>
+          <td>${statusText}</td>
+        </tr>`;
+      });
+    }
+    html += `</tbody></table>`;
+    html += `<p><strong>Total Correct:</strong> ${correctCount} / ${totalQuestions}</p>`;
+    marksContent.innerHTML = html;
+  }
+
+  // Editing handlers
+  function enterEditMode(section, data, qIndex, qDisp, qEdit, ul, editBtn, btnCheck, btnSave, btnCancel, feedback) {
+    editMode = true;
+    editToggleBtn.textContent = 'Exit Edit Mode';
+    editToggleBtn.setAttribute('aria-pressed', 'true');
+
+    qDisp.style.display = 'none';
+    qEdit.style.display = 'block';
+    ul.querySelectorAll('li').forEach((li, idx) => {
+      li.querySelector('label').style.display = 'none';
+      li.querySelector('input[type=radio]').checked = false;
+      li.querySelector('.option-edit').style.display = 'inline-block';
+    });
+    editBtn.style.display = 'none';
+    btnCheck.style.display = 'none';
+    btnSave.style.display = 'inline-block';
+    btnCancel.style.display = 'inline-block';
+    feedback.textContent = '';
+  }
+
+  function saveEdit(section, key, qIndex, qDisp, qEdit, ul, editBtn, btnCheck, btnSave, btnCancel, feedback) {
+    const newQuestion = qEdit.value.trim();
+    if (newQuestion === '') {
+      alert('Question cannot be empty.');
+      return;
+    }
+    const newOptions = [];
+    let emptyOption = false;
+    ul.querySelectorAll('.option-edit').forEach(input => {
+      const val = input.value.trim();
+      if(val === '') emptyOption = true;
+      newOptions.push(val);
+    });
+    if(emptyOption) {
+      alert('Options cannot be empty.');
+      return;
+    }
+    topics[key].quiz[qIndex].question = newQuestion;
+    topics[key].quiz[qIndex].options = newOptions;
+
+    saveQuizzesToStorage();
+
+    qDisp.textContent = newQuestion;
+    qDisp.style.display = 'block';
+    qEdit.style.display = 'none';
+    ul.querySelectorAll('li').forEach((li, idx) => {
+      li.querySelector('label').style.display = 'block';
+      li.querySelector('input[type=radio]').checked = false;
+      li.querySelector('span').textContent = newOptions[idx];
+      li.querySelector('.option-edit').style.display = 'none';
+      li.querySelector('.option-edit').value = newOptions[idx];
+    });
+
+    editBtn.style.display = 'inline-block';
+    btnCheck.style.display = 'inline-block';
+    btnSave.style.display = 'none';
+    btnCancel.style.display = 'none';
+    feedback.textContent = '';
+
+    alert('Question and options saved!');
+  }
+
+  function cancelEdit(section, qDisp, qEdit, ul, editBtn, btnCheck, btnSave, btnCancel, feedback, data, qIndex) {
+    qEdit.value = data.quiz[qIndex].question;
+    qDisp.textContent = data.quiz[qIndex].question;
+    qDisp.style.display = 'block';
+    qEdit.style.display = 'none';
+    ul.querySelectorAll('li').forEach((li, idx) => {
+      li.querySelector('label').style.display = 'block';
+      li.querySelector('input[type=radio]').checked = false;
+      li.querySelector('span').textContent = data.quiz[qIndex].options[idx];
+      li.querySelector('.option-edit').style.display = 'none';
+      li.querySelector('.option-edit').value = data.quiz[qIndex].options[idx];
+    });
+
+    editBtn.style.display = 'inline-block';
+    btnCheck.style.display = 'inline-block';
+    btnSave.style.display = 'none';
+    btnCancel.style.display = 'none';
+    feedback.textContent = '';
+  }
+
+  // When user checks an answer, store mark
+  function checkAnswer(section, key, qIndex, ul, feedbackDiv, data) {
+    const options = ul.querySelectorAll('input[type=radio]');
+    let selectedIndex = -1;
+    options.forEach((opt, idx) => {
+      if(opt.checked) selectedIndex = idx;
+    });
+    if(selectedIndex === -1) {
+      feedbackDiv.textContent = 'Please select an answer.';
+      feedbackDiv.className = 'feedback incorrect';
+      return;
+    }
+    const isCorrect = (selectedIndex === data.quiz[qIndex].correct);
+    if(isCorrect) {
+      feedbackDiv.textContent = 'Correct! Well done.';
+      feedbackDiv.className = 'feedback correct';
+    } else {
+      feedbackDiv.textContent = 'Incorrect, try again.';
+      feedbackDiv.className = 'feedback incorrect';
+    }
+    // Store marks
+    if(!marks[key]) marks[key] = {};
+    marks[key][qIndex] = {selected: selectedIndex, correct: isCorrect};
+    saveMarksToStorage();
+  }
+
+  loadMarksFromStorage();
+  loadQuizzesFromStorage();
+  renderContent();
+</script>
+
+</body>
+</html>
